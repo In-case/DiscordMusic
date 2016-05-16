@@ -32,7 +32,7 @@ Install the following:
 
 `cd dir/to/install`
 
-`npm install --msvs_version=2012`
+`npm install --msvs_version=2012` (or whatever year your Visual Studio is)
 
 If you see an error saying it can't find an .exe, and to install something, install it and try the package install again. Keep doing this until there are no red errors. It sucks, but that's Microsoft for you.
 
