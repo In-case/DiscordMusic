@@ -11,12 +11,18 @@ Please note this is an early alpha, and as such has several (known) bugs.
 You got it easy. Linux makes it quite easy to install everything you need. Run these commands.
 
 #### Installing ffmpeg
--`sudo add-apt-repository ppa:kirillshkrogalev/ffmpeg-next`
--`sudo apt-get update`
--`sudo apt-get install ffmpeg`
+
+`sudo add-apt-repository ppa:kirillshkrogalev/ffmpeg-next`
+
+`sudo apt-get update`
+
+`sudo apt-get install ffmpeg`
+
 #### Installing everything else
--`cd dir/to/install`
--`npm install`
+
+`cd dir/to/install`
+
+`npm install`
 
 ### Windows
 If you don't already have your Visual C++ compilers set up, you're gonna have a bad time.
@@ -24,8 +30,9 @@ Install the following:
 - Microsoft Visual Studio (latest version)
 - .NET Framework SDK (should come with Windows Server 2008, install that too)
 
--`cd dir/to/install`
--`npm install --msvs_version=2012`
+`cd dir/to/install`
+
+`npm install --msvs_version=2012`
 
 If you see an error saying it can't find an .exe, and to install something, install it and try the package install again. Keep doing this until there are no red errors. It sucks, but that's Microsoft for you.
 
