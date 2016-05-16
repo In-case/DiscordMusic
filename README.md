@@ -1,10 +1,11 @@
-# Discord Music
+# Discord Music v0.2.0
 A music bot for your server! Written in node.js
 
 Please note this is an early alpha, and as such has several (known) bugs.
 
 ## To-Do List
-- Add a way to block users from interacting with the bot.
+- Allow users to remove their own songs, and staff to remove any song. Right now the only option is a full clear.
+- Clarify some messages, and send certain info via PM.
 
 ## Install
 ### Linux
@@ -90,6 +91,10 @@ Anyone can use these commands, regardless of role.
 Only users with a specified staff role may use these commands.
 
 `!addplaylist [direct link]`: Adds up to fifty songs from the playlist. Playlist must not be private.
+
+`!block [user mention]`: Adds user to list of users not permitted to interact with the bot.
+
+`!unblock [user mention]`: Allows user to interact with the bot again.
 
 `!setvolume [volume]`: Sets the output volume of the bot. defaults to 0.1. DO NOT set higher than 0.25 unless you like angering your server.
 
