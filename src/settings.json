@@ -1,0 +1,133 @@
+{
+    "staffRoles": [],
+    "blocked": [],
+    "voiceDefault": null,
+    "textDefault": null,
+    "commandLiteral": "!",
+    "commands": {
+        "add": {
+            "staff": false,
+            "cooldown": 1500,
+            "voiceOnly": 0
+        },
+        "addplaylist": {
+            "staff": true,
+            "cooldown": 5000,
+            "voiceOnly": 0
+        },
+        "addstaff": {
+            "staff": true,
+            "cooldown": 1500,
+            "voiceOnly": 0,
+            "permOverride": 1
+        },
+        "clear": {
+            "staff": true,
+            "cooldown": 5000,
+            "voiceOnly": 0
+        },
+        "commands": {
+            "staff": false,
+            "cooldown": 60000,
+            "voiceOnly": 0
+        },
+        "forceskip": {
+            "staff": true,
+            "cooldown": 1000,
+            "voiceOnly": 0
+        },
+        "forcejoin": {
+            "staff": true,
+            "cooldown": 5000,
+            "voiceOnly": 1
+        },
+        "help": {
+            "staff": false,
+            "cooldown": 60000,
+            "voiceOnly": 0
+        },
+        "join": {
+            "staff": false,
+            "cooldown": 5000,
+            "voiceOnly": 1
+        },
+        "leave": {
+            "staff": true,
+            "cooldown": 5000,
+            "voiceOnly": 0
+        },
+        "listchannels": {
+            "staff": true,
+            "cooldown": 5000,
+            "voiceOnly": 0,
+            "permOverride": 1
+        },
+        "listroles": {
+            "staff": true,
+            "cooldown": 5000,
+            "voiceOnly": 0,
+            "permOverride": 1
+        },
+        "move": {
+            "staff": true,
+            "cooldown": 2000,
+            "voiceOnly": 0
+        },
+        "np": {
+            "staff": false,
+            "cooldown": 5000,
+            "voiceOnly": 0
+        },
+        "ping": {
+            "staff": false,
+            "cooldown": 0,
+            "voiceOnly": 0
+        },
+        "play": {
+            "staff": false,
+            "cooldown": 0,
+            "voiceOnly": 2
+        },
+        "queue": {
+            "staff": false,
+            "cooldown": 5000,
+            "voiceOnly": 0
+        },
+        "setliteral": {
+            "staff": true,
+            "cooldown": 1500,
+            "voiceOnly": 0
+        },
+        "settextdefault": {
+            "staff": true,
+            "cooldown": 5000,
+            "voiceOnly": 0
+        },
+        "setvoicedefault": {
+            "staff": true,
+            "cooldown": 5000,
+            "voiceOnly": 0
+        },
+        "setvolume": {
+            "staff": true,
+            "cooldown": 1500,
+            "voiceOnly": 2
+        },
+        "shuffle": {
+            "staff": false,
+            "cooldown": 2500,
+            "voiceOnly": 0
+        },
+        "skip": {
+            "staff": false,
+            "cooldown": 1000,
+            "voiceOnly": 2
+        },
+        "stop": {
+            "staff": true,
+            "cooldown": 5000,
+            "voiceOnly": 0
+        }
+    },
+    "queue": []
+}
