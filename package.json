@@ -1,0 +1,26 @@
+{
+  "name": "music-bot-discord",
+  "version": "0.2.0",
+  "description": "A music bot for your discord server.",
+  "main": "bot.js",
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "googleapis": "^6.1.0",
+    "discord.js": "^7.0.1",
+    "request": "^2.72.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brayzure/DiscordMusic.git"
+  },
+  "author": "Tyler Ricketts",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Brayzure/DiscordMusic/issues"
+  },
+  "homepage": "https://github.com/Brayzure/DiscordMusic#readme"
+}
