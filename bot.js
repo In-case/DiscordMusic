@@ -20,7 +20,8 @@ var local = {
 	nowPlaying: null,
 	skipVotes: [],
 	currentChannel: null,
-	inter: null
+	inter: null,
+	transition: 0
 };
 
 // Launch bot
@@ -183,6 +184,21 @@ var commands = {
 			save();
 		}
 	},
+	block: new function (){
+		this.staff = settings.commands.block.staff,
+		this.cooldown = settings.commands.block.cooldown,
+		this.voice = settings.commands.block.voiceOnly,
+		this.lastUsed = 0,
+		this.check = check,
+		this.run = function(message, args){
+			console.log(args);
+			for(var m = 0; m < args.length; m++){
+				settings.blocked.push(args[m].substring(2,args[m].length-1));
+			}
+			message.channel.sendMessage("Added " + args.length + " users to the block list!");
+			save();
+		}
+	},
 	clear: new function (){
 		this.staff = settings.commands.clear.staff,
 		this.cooldown = settings.commands.clear.cooldown,
@@ -203,18 +219,23 @@ var commands = {
 		this.check = check,
 		this.run = function(message, args){
 			message.channel.sendMessage("`User Commands`\
-			\n`$np:` Displays the currently playing song.\
-			\n`$add {search term}:` Searches YouTube for the search term. Can also directly link a url.\
-			\n`$queue:` Displays the next songs, up to 15.\
-			\n`$shuffle:` Shuffles the queue.\
-			\n`$join:` Bot joins Radio voice channel. Only staff can move it to another channel.\
-			\n`$stop:` Stops playback and queues up next song.\
+			\n`" + settings.commandLiteral + "np:` Displays the currently playing song.\
+			\n`" + settings.commandLiteral + "add {search term}:` Searches YouTube for the search term. Can also directly link a url.\
+			\n`" + settings.commandLiteral + "queue:` Displays the next songs, up to 15.\
+			\n`" + settings.commandLiteral + "shuffle:` Shuffles the queue.\
+			\n`" + settings.commandLiteral + "join:` Bot joins Radio voice channel. Only staff can move it to another channel.\
+			\n`" + settings.commandLiteral + "stop:` Stops playback and queues up next song.\
 			\n\n`Staff Commands`\
-			\n`$addplaylist {link}:` Adds the first 50 songs of a playlist.\
-			\n`$setvolume {float level}:` Sets the volume of the bot. Default is 0.1. Do NOT set to higher than 0.25 unless you want to piss off everyone.\
-			\n`$clear:` Clears the queue. Staff only command.\
-			\n`$forceskip:` Skips the song.\
-			\n`$leave:` Forces bot to leave the voice channel.");
+			\n`" + settings.commandLiteral + "addplaylist {link}:` Adds the first 50 songs of a playlist.\
+			\n`" + settings.commandLiteral + "block {user mention}:` Prevents the user mentioned from interacting with the bot at all.\
+			\n`" + settings.commandLiteral + "unblock {user mention}:` Removes the block from the mentioned user.\
+			\n`" + settings.commandLiteral + "setvolume {float level}:` Sets the volume of the bot. Default is 0.1. Do NOT set to higher than 0.5 unless you want to piss off everyone.\
+			\n`" + settings.commandLiteral + "addstaff {roleID}:` Adds the role ID to the list of roles that can use staff commands.\
+			\n`" + settings.commandLiteral + "removestaff {roleID}:` Removes the role ID to the list of roles that can use staff commands.\
+			\n`" + settings.commandLiteral + "clear:` Clears the queue. Staff only command.\
+			\n`" + settings.commandLiteral + "forceskip:` Skips the song.\
+			\n`" + settings.commandLiteral + "move {start} {end}:` Moves the song at `start` position to `end` position.\
+			\n`" + settings.commandLiteral + "leave:` Forces bot to leave the voice channel.");
 		}
 	},
 	forceskip: new function (){
@@ -248,9 +269,9 @@ var commands = {
 		this.check = check,
 		this.run = function(message, args){
 			message.channel.sendMessage("`Help`\
-			\nFirst, make sure the bot is in the Fury Radio channel. If it isn't, join the voice channel and type `$join` in $music.\
-			\nYou can add music by typing `$add {search term}` to automatically search YouTube for your video. Type `$play` to start playing from the queue.\
-			\nDon't like a song that is playing? Type `$skip` to vote to skip the song. You can see upcoming songs with `$queue`. If the bot isn't online, yell at Brayzure.\
+			\nFirst, make sure the bot is in the Fury Radio channel. If it isn't, join the voice channel and type `" + settings.commandLiteral + "join` in " + settings.commandLiteral + "music.\
+			\nYou can add music by typing `" + settings.commandLiteral + "add {search term}` to automatically search YouTube for your video. Type `" + settings.commandLiteral + "play` to start playing from the queue.\
+			\nDon't like a song that is playing? Type `" + settings.commandLiteral + "skip` to vote to skip the song. You can see upcoming songs with `" + settings.commandLiteral + "queue`. If the bot isn't online, yell at Brayzure.\
 			\nEnjoy the music!");
 		}
 	},
@@ -416,6 +437,30 @@ var commands = {
 			message.channel.sendMessage(str);
 			}
 	},
+	removestaff: new function (){
+		this.staff = settings.commands.removestaff.staff,
+		this.cooldown = settings.commands.removestaff.cooldown,
+		this.voice = settings.commands.removestaff.voiceOnly,
+		this.override = settings.commands.removestaff.permOverride,
+		this.lastUsed = 0,
+		this.check = check,
+		this.run = function(message, args){
+			if(args.length >= settings.staffRoles.length){
+				message.channel.sendMessage("You can't remove ALL staff roles.");
+			}
+			else{
+				for(var g = 0; g < args.length; g++){
+					for(var h = 0; h < settings.staffRoles.length; h++){
+						if(args[g] == settings.staffRoles[h]){
+							settings.staffRoles.splice(h,h+1);
+						}
+					}
+				}
+				message.channel.sendMessage("Removed " + args.length + " roles to the staff list!");
+				save();
+			}
+		}
+	},
 	setliteral:  new function (){
 		this.staff = settings.commands.setliteral.staff,
 		this.cooldown = settings.commands.setliteral.cooldown,
@@ -460,7 +505,12 @@ var commands = {
 		this.lastUsed = 0,
 		this.check = check,
 		this.run = function(message, args){
-			client.voiceConnection.setVolume(parseInt(args[0]));
+			if(parseFloat(args[0]) > 0.5 && args.length == 1){
+				message.channel.sendMessage("Cannot set volume higher than 0.5 without the -override tag at the end.");
+			}
+			if(parseFloat(args[0]) < 0.5 || args[1] == "-override"){
+				client.voiceConnection.setVolume(parseFloat(args[0]));
+			}
 		}
 	},
 	shuffle: new function (){
@@ -523,7 +573,7 @@ var commands = {
 			if(!local.stopped){
 				local.stopped = 1;
 				client.voiceConnection.stopPlaying();
-				message.channel.sendMessage("Stopping playback. You can resume it, starting with the next song, with `#play`!");
+				message.channel.sendMessage("Stopping playback. You can resume it, starting with the next song, with `" + settings.commandLiteral + "play`!");
 				local.nowPlaying = null;
 				client.setStatus("online",null,function(err){
 					if(err){throw err;}
@@ -533,12 +583,31 @@ var commands = {
 				message.channel.sendMessage("Playback isn't started.");
 			}
 		}
+	},
+	unblock: new function (){
+		this.staff = settings.commands.unblock.staff,
+		this.cooldown = settings.commands.unblock.cooldown,
+		this.voice = settings.commands.unblock.voiceOnly,
+		this.override = settings.commands.unblock.permOverride,
+		this.lastUsed = 0,
+		this.check = check,
+		this.run = function(message, args){
+			for(var g = 0; g < args.length; g++){
+				for(var h = 0; h < settings.blocked.length; h++){
+					if(args[g].substring(2,args[g].length-1) == settings.blocked[h]){
+						settings.blocked.splice(h,h+1);
+					}
+				}
+			}
+			message.channel.sendMessage("Removed " + args.length + " users from the block list!");
+			save();
+		}
 	}
 }
 
 // Check if current song is done playing
 function interval(){
-	if(!local.stopped && settings.queue.length > 0 && !client.voiceConnection.playing){
+	if(!local.stopped && settings.queue.length > 0 && !client.voiceConnection.playing && !local.transition7){
 		playNext();
 	}
 	local.inter = setTimeout(interval,2000);
@@ -649,6 +718,7 @@ Array.prototype.move = function (old_index, new_index) {
 // Advance song
 function playNext(){
 	if(settings.queue.length > 0){
+		local.transition = 1;
 		setTimeout(function() {
 			client.voiceConnection.playFile(settings.queue[0].url,{},function(){
 				console.log("Playing " + settings.queue[0].title);
@@ -659,6 +729,7 @@ function playNext(){
 				});
 				
 				settings.queue.shift();
+				local.transition = 0;
 				save();
 			});
 		}, 250);
@@ -676,6 +747,11 @@ function playNext(){
 
 // Check if command should be run
 function check(message){
+	for(var e = 0; e < settings.blocked.length; e++){
+		if(message.author.id == settings.blocked[e] && message.author.id != secret.dev){
+			return "ERR_USER_BLOCKED";
+		}
+	}
 	if(this.staff && message.author.id != secret.dev){
 		if(!isStaff(message)){
 			var flag = 1;

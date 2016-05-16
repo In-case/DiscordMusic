@@ -21,6 +21,11 @@
             "voiceOnly": 0,
             "permOverride": 1
         },
+        "block": {
+            "staff": true,
+            "cooldown": 0,
+            "voiceOnly": 0
+        },
         "clear": {
             "staff": true,
             "cooldown": 5000,
@@ -93,6 +98,12 @@
             "cooldown": 5000,
             "voiceOnly": 0
         },
+        "removestaff": {
+            "staff": true,
+            "cooldown": 1500,
+            "voiceOnly": 0,
+            "permOverride": 1
+        },
         "setliteral": {
             "staff": true,
             "cooldown": 1500,
@@ -126,6 +137,11 @@
         "stop": {
             "staff": true,
             "cooldown": 5000,
+            "voiceOnly": 0
+        },
+        "unblock": {
+            "staff": true,
+            "cooldown": 0,
             "voiceOnly": 0
         }
     },
