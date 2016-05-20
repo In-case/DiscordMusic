@@ -119,7 +119,7 @@ This requires beginner to intermediate knowledge of Javascript.
 
 `staffRoles`: Array storing string role IDs that correspond to valid staff roles.
 
-`blocked`: Array storing string user IDs of users that may not interact with the bot. Not yet implemented.
+`blocked`: Array storing string user IDs of users that may not interact with the bot.
 
 `voiceDefault`: String corresponding to the default voice channel ID, or `null` if disabled.
 
