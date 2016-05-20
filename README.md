@@ -1,11 +1,12 @@
-# Discord Music v0.2.0
+# Discord Music v0.3.0
 A music bot for your server! Written in node.js
 
 Please note this is an early alpha, and as such has several (known) bugs.
 
 ## To-Do List
-- Allow users to remove their own songs, and staff to remove any song. Right now the only option is a full clear.
 - Clarify some messages, and send certain info via PM.
+- Add toggle to debug messages.
+- More intuitive first-time setup.
 
 ## Install
 ### Linux
@@ -86,6 +87,8 @@ Anyone can use these commands, regardless of role.
 `!np`: Displays the currently playing song.
 
 `!stop`: Stops playback of the song, and queues up the next song.
+
+`!remove [position]`: Removes the song at `position`. You must be the song submitter to remove it. Staff can remove any song.
 
 ### Staff Commands
 Only users with a specified staff role may use these commands.

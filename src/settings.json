@@ -99,6 +99,11 @@
             "cooldown": 5000,
             "voiceOnly": 0
         },
+        "remove": {
+            "staff": false,
+            "cooldown": 1500,
+            "voiceOnly": 0
+        },
         "removestaff": {
             "staff": true,
             "cooldown": 1500,

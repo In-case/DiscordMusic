@@ -260,6 +260,7 @@ var commands = {
 			\n`" + settings.commandLiteral + "shuffle:` Shuffles the queue.\
 			\n`" + settings.commandLiteral + "join:` Bot joins Radio voice channel. Only staff can move it to another channel.\
 			\n`" + settings.commandLiteral + "stop:` Stops playback and queues up next song.\
+			\n`" + settings.commandLiteral + "remove {position}:` Removes the song at the listed position from the queue. It must be your song, or you must be staff.\
 			\n\n`Staff Commands`\
 			\n`" + settings.commandLiteral + "addplaylist {link}:` Adds the first 50 songs of a playlist.\
 			\n`" + settings.commandLiteral + "block {user mention}:` Prevents the user mentioned from interacting with the bot at all.\
@@ -518,6 +519,23 @@ var commands = {
 			}
 		}
 	},
+	remove: new function (){
+		this.staff = settings.commands.remove.staff,
+		this.cooldown = settings.commands.remove.cooldown,
+		this.voice = settings.commands.remove.voiceOnly,
+		this.lastUsed = 0,
+		this.check = check,
+		this.run = function(message, args){
+			var id = message.author.id;
+				pos = parseInt(args[0])-1;
+			
+			if(isStaff(message) || id == settings.queue[pos].id){
+				var removed = settings.queue.splice(pos,pos+1);
+				message.channel.sendMessage("Removed " + removed[0].title + " from the queue!")
+				save();
+			}
+		}
+	},
 	setliteral:  new function (){
 		this.staff = settings.commands.setliteral.staff,
 		this.cooldown = settings.commands.setliteral.cooldown,
@@ -771,6 +789,7 @@ function addVideoToQueue(result,callback) {
 			settings.queue.push({
 				title: videoTitle.replace("`", "'"),
 				user: result.user.username,
+				id: result.user.id,
 				url: audioURL
 			});
 			
