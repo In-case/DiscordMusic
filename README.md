@@ -54,7 +54,6 @@ You cannot put this bot on your account, as per Discord's guidelines, nor can yo
 By default, the list of permitted roles is empty, and needs populating.
 - `!listroles` outputs a list of all roles, and their IDs.
 - Any staff member with the Manage Server permission can then do `!addstaff [role1ID] [role2ID]` for any number of space-separated Role IDs. Any user with any of those roles can now perform staff commands.
-- `!removestaff [role1ID] [role2ID] [role3ID]` is coming!
 
 By default, any user can make the bot join any channel, and the bot will process and respond to commands in any channel. Changing this is similar to adding staff.
 - `!listchannels` outputs a list of channels, sorted by Voice and Text, along with their IDs.
@@ -140,3 +139,7 @@ This requires beginner to intermediate knowledge of Javascript.
 ```
 
 `queue`: Array storing queue'd tracks. Highly recommend you don't mess with it.
+
+## Other Info
+
+An in-dev version of this bot is located on the /r/RocketLeague subreddit Discord server, with potentially unreleased features and fixes. [Stop by](https://discord.gg/0qooMqavPFP0w8j9) if you would like to interact with the bot or ask any questions!
