@@ -4,6 +4,7 @@
     "voiceDefault": null,
     "textDefault": null,
     "commandLiteral": "!",
+    "autoplay": 1,
     "commands": {
         "add": {
             "staff": false,

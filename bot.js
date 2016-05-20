@@ -31,8 +31,20 @@ client.loginWithToken(secret.token);
 
 // Begin Listeners
 client.on("ready", e => {
-	console.log("Music Bot is ready to go!");
-	interval();
+	log("log", "Music Bot is ready to go!");
+});
+
+client.on("error", e => {
+	console.log("[ERROR]", e);
+});
+
+client.on("disconnected", e => {
+	log("error", "Lost connection to the Discord server. This is bad.");
+	if(local.inter){
+		clearInterval(local.inter);
+		local.inter = null;
+	}
+	client.loginWithToken(secret.token);
 });
 
 client.on("message", message =>{
@@ -43,13 +55,14 @@ client.on("message", message =>{
 		}
 		var commandName = message.content.substring(1,end);
 		if(settings.commands[commandName]){
-			console.log("[LOG] Command "+ settings.commandLiteral + commandName + " invoked by " + message.author.username);
+			log("log", "Command " + settings.commandLiteral + commandName + " invoked by " + message.author.username);
 			var args = message.content.split(" ");
 			args.splice(0,1);
 			var status = commands[commandName].check(message);
-			console.log("[STATUS] " + status);
+			log("status", status);
 			if(status == "OK"){
 				commands[commandName].run(message,args);
+				commands[commandName].lastUsed = new Date().getTime();
 			}
 			if(status == "ERR_STAFF"){
 				message.channel.sendMessage("You aren't allowed to do that. Try again when you're more awesome!");
@@ -68,7 +81,7 @@ client.on("message", message =>{
 			}
 		}
 		else{
-			console.log("[LOG] Command " + commandName + " does not exist!");
+			log("error", "Command " + settings.commandLiteral + commandName + " does not exist!");
 		}
 	}
 });
@@ -78,7 +91,7 @@ client.on("message", message =>{
 // Save settings
 function save(){
 	fs.writeFile("./src/settings.json",JSON.stringify(settings, null, 4),function(err){
-		if(err){console.log("[ERROR] Settings couldn't be saved!");}
+		if(err){log("error", "Settings couldn't be saved!");}
 	});
 }
 
@@ -114,6 +127,18 @@ var commands = {
 					var worked = addVideoToQueue(result,function(worked){
 						if(!worked){
 							message.channel.sendMessage("The link at http://youtu.be/" + result.id + " does not have an audio version. Directly linking another version should work!");
+						}
+						else if(settings.autoplay && client.voiceConnection && local.stopped){
+							message.channel.sendMessage("Beginning playback. Enjoy your music!");
+							client.voiceConnection.setVolume(0.1);
+							setTimeout(function(){
+								playNext();
+							},1000);
+							setTimeout(function(){
+								local.stopped = 0;
+								local.inter = setInterval(interval,5000);
+							},2500);
+							log("log", "Created interval()");
 						}
 					});
 				}
@@ -163,6 +188,16 @@ var commands = {
 								}
 								*/
 							});
+						}
+						if(settings.autoplay && client.voiceConnection && local.stopped){
+							message.channel.sendMessage("Beginning playback. Enjoy your music!");
+							client.voiceConnection.setVolume(0.1);
+							playNext();
+							setTimeout(function(){
+								local.stopped = 0;
+								local.inter = setInterval(interval,5000);
+							},2500);
+							log("log", "Created interval()");
 						}
 					}
 				});
@@ -262,9 +297,9 @@ var commands = {
 		}
 	},
 	help: new function (){
-		this.staff = settings.commands.join.staff,
-		this.cooldown = settings.commands.join.cooldown,
-		this.voice = settings.commands.join.voiceOnly,
+		this.staff = settings.commands.help.staff,
+		this.cooldown = settings.commands.help.cooldown,
+		this.voice = settings.commands.help.voiceOnly,
 		this.lastUsed = 0,
 		this.check = check,
 		this.run = function(message, args){
@@ -285,6 +320,18 @@ var commands = {
 			message.author.voiceChannel.join();
 			message.channel.sendMessage("Joined your voice channel!");
 			local.currentChannel = message.author.voiceChannel;
+			setTimeout(function(){
+				if(settings.autoplay && client.voiceConnection && local.stopped && settings.queue.length > 0){
+					message.channel.sendMessage("Beginning playback. Enjoy your music!");
+					client.voiceConnection.setVolume(0.1);
+					playNext();
+					setTimeout(function(){
+						local.stopped = 0;
+						local.inter = setInterval(interval,5000);
+					},2500);
+					log("log", "Created interval()");
+				}
+			},1000);
 		}
 	},
 	leave: new function (){
@@ -294,13 +341,15 @@ var commands = {
 		this.lastUsed = 0,
 		this.check = check,
 		this.run = function(message, args){
-			clearInterval(local.inter);
+			clearTimeout(local.inter);
+			log("log", "Destroyed interval()");
 			if (local.currentChannel){
 				client.voiceConnection.destroy();
 				message.channel.sendMessage("Leaving the voice channel, goodbye!");
 			}
 			local.nowPlaying = null;
 			local.currentChannel = null;
+			local.inter = null;
 		}
 	},
 	listchannels: new function (){
@@ -400,10 +449,18 @@ var commands = {
 		this.lastUsed = 0,
 		this.check = check,
 		this.run = function(message, args){
-			message.channel.sendMessage("Beginning playback. Enjoy your music!");
-			client.voiceConnection.setVolume(0.1);
-			playNext();
-			local.stopped = 0;
+			if(!local.stopped){
+				message.channel.sendMessage("Playback has already started!");
+			}
+			else{
+				message.channel.sendMessage("Beginning playback. Enjoy your music!");
+				client.voiceConnection.setVolume(0.1);
+				playNext();
+				setTimeout(function(){
+					local.stopped = 0;
+				},2500);
+			}
+			
 		}
 	},
 	queue:  new function (){
@@ -481,9 +538,16 @@ var commands = {
 		this.lastUsed = 0,
 		this.check = check,
 		this.run = function(message, args){
-			settings.textDefault = args[0];
-			message.channel.sendMessage("Set default text channel.");
-			save();
+			if(args[0] == "null"){
+				settings.textDefault = null;
+				message.channel.sendMessage("Cleared default text channel.");
+				save();
+			}
+			else{
+				settings.textDefault = args[0];
+				message.channel.sendMessage("Set default text channel.");
+				save();
+			}
 		}
 	},
 	setvoicedefault:  new function (){
@@ -493,9 +557,16 @@ var commands = {
 		this.lastUsed = 0,
 		this.check = check,
 		this.run = function(message, args){
-			settings.voiceDefault = args[0];
-			message.channel.sendMessage("Set default voice channel.");
-			save();
+			if(args[0] == "null"){
+				settings.voiceDefault = null;
+				message.channel.sendMessage("Cleared default voice channel.");
+				save();
+			}
+			else{
+				settings.voiceDefault = args[0];
+				message.channel.sendMessage("Set default voice channel.");
+				save();
+			}
 		}
 	},
 	setvolume:  new function (){
@@ -534,7 +605,7 @@ var commands = {
 			var uid = message.author.id;
 				flag = 0;
 			
-			if(message.author.voiceChannel){
+			if(message.author.voiceChannel != null){
 				if(message.author.voiceChannel.id == "152518535292125184"){
 					for(var g = 0; g < local.skipVotes.length; g++){
 						if(uid == local.skipVotes[g]){
@@ -544,7 +615,7 @@ var commands = {
 					if(!flag){
 						local.skipVotes.push(uid);
 						var members = local.currentChannel.members.length - 1;
-						console.log("Skip ratio: " + parseFloat(local.skipVotes.length/members).toString());
+						log("log", "Current skip ratio: " + parseFloat(local.skipVotes.length/members).toString());
 						if(parseFloat(local.skipVotes.length/members) >= 0.5){
 							message.channel.sendMessage("Enough people voted to skip, skipping!");
 							playNext();
@@ -575,6 +646,9 @@ var commands = {
 				client.voiceConnection.stopPlaying();
 				message.channel.sendMessage("Stopping playback. You can resume it, starting with the next song, with `" + settings.commandLiteral + "play`!");
 				local.nowPlaying = null;
+				clearInterval(local.inter);
+				local.inter = null;
+				log("log", "Destroyed interval()");
 				client.setStatus("online",null,function(err){
 					if(err){throw err;}
 				});
@@ -592,25 +666,47 @@ var commands = {
 		this.lastUsed = 0,
 		this.check = check,
 		this.run = function(message, args){
+			var test = 0;
 			for(var g = 0; g < args.length; g++){
 				for(var h = 0; h < settings.blocked.length; h++){
 					if(args[g].substring(2,args[g].length-1) == settings.blocked[h]){
 						settings.blocked.splice(h,h+1);
+						test++;
 					}
 				}
 			}
-			message.channel.sendMessage("Removed " + args.length + " users from the block list!");
+			message.channel.sendMessage("Removed " + test + " users from the block list!");
 			save();
 		}
 	}
 }
 
+// Unified command to log to console
+function log(type,message){
+	var str = type.toUpperCase();
+		time = new Date().toTimeString().split(' ').splice(0, 1)[0];
+		
+	str = str + " [" + time + "] " + message;
+	
+	console.log(str);
+}
+
 // Check if current song is done playing
 function interval(){
 	if(!local.stopped && settings.queue.length > 0 && !client.voiceConnection.playing && !local.transition7){
+		log("log", "Advancing song automatically!");
 		playNext();
 	}
-	local.inter = setTimeout(interval,2000);
+	else if(!local.stopped && settings.queue.length == 0 && !client.voiceConnection.playing){
+		local.stopped = 1;
+		log("log", "No more songs!");
+		clearInterval(local.inter);
+		local.inter = null;
+		log("log", "Destroyed interval()!");
+		client.setStatus("online",null,function(err){
+			if(err){throw err;}
+		});
+	}
 }
 
 // YouTube search
@@ -660,21 +756,20 @@ function addVideoToQueue(result,callback) {
 			var videoTitle = $('title').text();
 			
 			if(videoTitle.indexOf('SaveDeo') != -1) {
-				console.log("Sorry, I couldn't get audio track for that video. No result pushed.");
-				console.log(videoTitle);
+				log("error", "Sorry, I couldn't get audio track for that video. No result pushed.");
 				return;
 			}
 			
 			var audioURL = $('#main div.clip table tbody tr th span.fa-music').first().parent().parent().find('td a').attr('href');
 			
 			if(audioURL ==  undefined){
-				console.log("No audio version found.")
+				log("error", "No audio version found.")
 				callback(0);
 				return;
 			}
 			
 			settings.queue.push({
-				title: videoTitle,
+				title: videoTitle.replace("`", "'"),
 				user: result.user.username,
 				url: audioURL
 			});
@@ -717,25 +812,26 @@ Array.prototype.move = function (old_index, new_index) {
 
 // Advance song
 function playNext(){
+	log("log", "playNext() called!");
 	if(settings.queue.length > 0){
 		local.transition = 1;
-		setTimeout(function() {
-			client.voiceConnection.playFile(settings.queue[0].url,{},function(){
-				console.log("Playing " + settings.queue[0].title);
-				local.nowPlaying = settings.queue[0].title;
-				skipvotes = [];
-				client.setStatus("online",settings.queue[0].title,function(err){
-					if(err){throw err;}
-				});
-				
-				settings.queue.shift();
-				local.transition = 0;
-				save();
+		client.voiceConnection.playFile(settings.queue[0].url,{},function(){
+			log("log", "Playing " + settings.queue[0].title);
+			local.nowPlaying = settings.queue[0].title;
+			skipvotes = [];
+			client.setStatus("online",settings.queue[0].title,function(err){
+				if(err){throw err;}
 			});
-		}, 250);
+			
+			settings.queue.shift();
+			setTimeout(function(){
+				local.transition = 0;
+			},5000);
+			save();
+		});
 	}
 	else{
-		console.log("No more songs!");
+		log("log", "No more songs!");
 		client.voiceConnection.stopPlaying();
 		client.setStatus("online",null,function(err){
 				if(err){throw err;}
