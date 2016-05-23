@@ -27,10 +27,19 @@ You got it easy. Linux makes it quite easy to install everything you need. Run t
 `npm install`
 
 ### Windows
+
+#### Installing Visual C++ compilers
+
 If you don't already have your Visual C++ compilers set up, you're gonna have a bad time.
 Install the following:
 - Microsoft Visual Studio (latest version)
 - .NET Framework SDK (should come with Windows Server 2008, install that too)
+
+#### Installing ffmpeg
+
+Follow the guide [here](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/) to get it installed. It explains it quite nicely.
+
+#### Installing everything else
 
 `cd dir/to/install`
 
