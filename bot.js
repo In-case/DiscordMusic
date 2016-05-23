@@ -308,7 +308,21 @@ var commands = {
 		this.lastUsed = 0,
 		this.check = check,
 		this.run = function(message, args){
-			
+			message.author.voiceChannel.join();
+			message.channel.sendMessage("Joined your voice channel!");
+			local.currentChannel = message.author.voiceChannel;
+			setTimeout(function(){
+				if(settings.autoplay && client.voiceConnection && local.stopped && settings.queue.length > 0){
+					message.channel.sendMessage("Beginning playback. Enjoy your music!");
+					client.voiceConnection.setVolume(0.1);
+					playNext();
+					setTimeout(function(){
+						local.stopped = 0;
+						local.inter = setInterval(interval,5000);
+					},2500);
+					log("log", "Created interval()");
+				}
+			},1000);
 		}
 	},
 	help: new function (){
@@ -927,7 +941,7 @@ function check(message){
 			return "ERR_NOT_IN_DEFAULT_TEXT"; // Message was not posted in default text channel
 		}
 	}
-	if(settings.voiceDefault && this.voice == 1){
+	if(settings.voiceDefault && this.voice == 1 && !this.staff){
 		var voice = message.author.voiceChannel;
 		if(voice){
 			if(voice.id != settings.voiceDefault){
