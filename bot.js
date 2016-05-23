@@ -1,6 +1,6 @@
 /************Music Bot**************
 Developer: Tyler Ricketts (Brayzure)
-Github: Soon
+Github: https://github.com/Brayzure/DiscordMusic
 ***********************************/
 
 // Begin Setup
