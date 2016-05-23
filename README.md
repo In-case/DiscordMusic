@@ -1,4 +1,4 @@
-# Discord Music v0.3.0
+# Discord Music v0.3.1
 A music bot for your server! Written in node.js
 
 Please note this is an early alpha, and as such has several (known) bugs.
@@ -100,7 +100,7 @@ Only users with a specified staff role may use these commands.
 
 `!setvolume [volume]`: Sets the output volume of the bot. defaults to 0.1. DO NOT set higher than 0.25 unless you like angering your server.
 
-`!clear`: Clears the queue. Does not affect currently playing song.
+`!clear [User mention]`: Clears the queue or, if a username is provided, clears all songs the listed user added.. Does not affect currently playing song.
 
 `!move [start] [end]`: Moves the song at `start` position on the queue to `end` position.
 

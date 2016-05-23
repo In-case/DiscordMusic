@@ -241,9 +241,23 @@ var commands = {
 		this.lastUsed = 0,
 		this.check = check,
 		this.run = function(message, args){
-			settings.queue = [];
+			if(args[0]){
+				var id = args[0].substring(2,args[0].length-1);
+					count = 0;
+					len = settings.queue.length;
+				for(var z = 0; z < len; z++){
+					if(settings.queue[z-count].id == id){
+						settings.queue.splice(z-count,z-count+1);
+						count++;
+					}
+				}
+				message.channel.sendMessage("Removed " + count + " songs from the queue!");
+			}
+			else{
+				settings.queue = [];
+				message.channel.sendMessage("Queue cleared!");
+			}
 			save();
-			message.channel.sendMessage("Queue cleared!");
 		}
 	},
 	commands: new function (){
@@ -453,6 +467,9 @@ var commands = {
 			if(!local.stopped){
 				message.channel.sendMessage("Playback has already started!");
 			}
+			else if(settings.queue.length == 0){
+				message.channel.sendMessage("No music on the queue, add some then start playing!");
+			}
 			else{
 				message.channel.sendMessage("Beginning playback. Enjoy your music!");
 				client.voiceConnection.setVolume(0.1);
@@ -533,6 +550,9 @@ var commands = {
 				var removed = settings.queue.splice(pos,pos+1);
 				message.channel.sendMessage("Removed " + removed[0].title + " from the queue!")
 				save();
+			}
+			else if(!isStaff(message) && id != settings.queue[pos].id){
+				message.channel.sendMessage("You must be staff to remove a song you didn't add!");
 			}
 		}
 	},
