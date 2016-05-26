@@ -1,7 +1,7 @@
-/************Music Bot**************
+/*****************Music Bot*********************
 Developer: Tyler Ricketts (Brayzure)
 Github: https://github.com/Brayzure/DiscordMusic
-***********************************/
+***********************************************/
 
 // Begin Setup
 var settings = require("./src/settings.json"); // Persistent settings
@@ -441,8 +441,14 @@ var commands = {
 				message.channel.sendMessage("Too many arguments for the move!");
 			}
 			else{
-				settings.queue.move(args[0]-1,args[1]-1);
-				save();
+				if(!isNaN(args[0]) && !isNaN(args[1]) && args[0] <= settings.queue.length && args[1] <= settings.queue.length){
+					settings.queue.move(args[0]-1,args[1]-1);
+					message.channel.sendMessage("Moved `" + settings.queue[args[1]-1].title + "` to position `" + args[1] + "`!");
+					save();
+				}
+				else{
+					message.channel.sendMessage("Positions not valid, make sure you're not trying to move a song to or from an invalid location!");
+				}
 			}
 		}
 	},
@@ -557,17 +563,23 @@ var commands = {
 		this.lastUsed = 0,
 		this.check = check,
 		this.run = function(message, args){
-			var id = message.author.id;
-				pos = parseInt(args[0])-1;
+			if(!isNaN(args[0]) && args[0].length != 0){
+				var id = message.author.id;
+					pos = parseInt(args[0])-1;
+				
+				if(isStaff(message) || id == settings.queue[pos].id){
+					var removed = settings.queue.splice(pos,pos+1);
+					message.channel.sendMessage("Removed " + removed[0].title + " from the queue!")
+					save();
+				}
+				else if(!isStaff(message) && id != settings.queue[pos].id){
+					message.channel.sendMessage("You must be staff to remove a song you didn't add!");
+				}
+			}
+			else{
+				message.channel.sendMessage(args[0].toString() + " is not a valid argument, please choose an integer!");
+			}
 			
-			if(isStaff(message) || id == settings.queue[pos].id){
-				var removed = settings.queue.splice(pos,pos+1);
-				message.channel.sendMessage("Removed " + removed[0].title + " from the queue!")
-				save();
-			}
-			else if(!isStaff(message) && id != settings.queue[pos].id){
-				message.channel.sendMessage("You must be staff to remove a song you didn't add!");
-			}
 		}
 	},
 	setliteral:  new function (){
