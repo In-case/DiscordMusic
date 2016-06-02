@@ -1,4 +1,4 @@
-# Discord Music v0.3.2
+# Discord Music v0.4.0
 A music bot for your server! Written in node.js
 
 Please note this is an early beta, and as such has several (known) bugs.
@@ -60,6 +60,12 @@ You cannot put this bot on your account, as per Discord's guidelines, nor can yo
 - Go back to your Application page, and find your Client ID (should be the first field listed). Replace CLIENT_ID_HERE in https://discordapp.com/oauth2/authorize?client_id=CLIENT_ID_HERE&scope=bot&permissions=0 and open it in your web browser. You need the Manage Server permission in order to do this.
 
 ### Step 3: In-Server setup.
+Start the bot. You have two options, depending on your needs.
+
+`node bot.js` - This will start the bot normally.
+
+`node ever.js` - This will enable crash recovery. if the bot crashes, it will attempt to relaunch itself. Keep in mind it will stop trying if it fails to stay running for at least 15 seconds.
+
 By default, the list of permitted roles is empty, and needs populating.
 - `!listroles` outputs a list of all roles, and their IDs.
 - Any staff member with the Manage Server permission can then do `!addstaff [role1ID] [role2ID]` for any number of space-separated Role IDs. Any user with any of those roles can now perform staff commands.

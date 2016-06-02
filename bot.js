@@ -13,6 +13,7 @@ var settings = require("./src/settings.json"); // Persistent settings
 	http = require('http');
 	fs = require("fs");
 	request = require("request");
+	clc = require('cli-color');
 
 // Local settings, they don't persist after shutdown	
 var local = {
@@ -42,6 +43,7 @@ client.on("disconnected", e => {
 	log("error", "Lost connection to the Discord server. This is bad.");
 	if(local.inter){
 		clearInterval(local.inter);
+		log("debug","Destroyed interval()!");
 		local.inter = null;
 	}
 	client.loginWithToken(secret.token);
@@ -138,7 +140,7 @@ var commands = {
 								local.stopped = 0;
 								local.inter = setInterval(interval,5000);
 							},2500);
-							log("log", "Created interval()");
+							log("debug", "Created interval()");
 						}
 					});
 				}
@@ -197,7 +199,7 @@ var commands = {
 								local.stopped = 0;
 								local.inter = setInterval(interval,5000);
 							},2500);
-							log("log", "Created interval()");
+							log("debug", "Created interval()");
 						}
 					}
 				});
@@ -320,7 +322,7 @@ var commands = {
 						local.stopped = 0;
 						local.inter = setInterval(interval,5000);
 					},2500);
-					log("log", "Created interval()");
+					log("debug", "Created interval()");
 				}
 			},1000);
 		}
@@ -358,7 +360,7 @@ var commands = {
 						local.stopped = 0;
 						local.inter = setInterval(interval,5000);
 					},2500);
-					log("log", "Created interval()");
+					log("debug", "Created interval()");
 				}
 			},1000);
 		}
@@ -371,7 +373,7 @@ var commands = {
 		this.check = check,
 		this.run = function(message, args){
 			clearTimeout(local.inter);
-			log("log", "Destroyed interval()");
+			log("debug", "Destroyed interval()");
 			if (local.currentChannel){
 				client.voiceConnection.destroy();
 				message.channel.sendMessage("Leaving the voice channel, goodbye!");
@@ -712,7 +714,7 @@ var commands = {
 				local.nowPlaying = null;
 				clearInterval(local.inter);
 				local.inter = null;
-				log("log", "Destroyed interval()");
+				log("debug", "Destroyed interval()");
 				client.setStatus("online",null,function(err){
 					if(err){throw err;}
 				});
@@ -749,10 +751,28 @@ var commands = {
 function log(type,message){
 	var str = type.toUpperCase();
 		time = new Date().toTimeString().split(' ').splice(0, 1)[0];
-		
-	str = str + " [" + time + "] " + message;
 	
-	console.log(str);
+	var error = clc.redBright.bold;
+	var warn = clc.yellowBright;
+	var debug = clc.blueBright;
+	var ok = clc.greenBright;
+	
+	if(str == "DEBUG" && settings.debug){
+		console.log(debug(str) + " [" + time + "] " + message);
+	}
+	else if(str == "ERROR"){
+		console.log(error(str) + " [" + time + "] " + message);
+	}
+	else if(str == "STATUS" && message == "OK"){
+		console.log(str + " [" + time + "] " + ok(message));
+	}
+	else if(str == "STATUS"){
+		console.log(str + " [" + time + "] " + warn(message));
+	}
+	else{
+		str = str + " [" + time + "] " + message;
+		console.log(str);
+	}
 }
 
 // Check if current song is done playing
@@ -766,7 +786,7 @@ function interval(){
 		log("log", "No more songs!");
 		clearInterval(local.inter);
 		local.inter = null;
-		log("log", "Destroyed interval()!");
+		log("debug", "Destroyed interval()!");
 		client.setStatus("online",null,function(err){
 			if(err){throw err;}
 		});
@@ -877,7 +897,7 @@ Array.prototype.move = function (old_index, new_index) {
 
 // Advance song
 function playNext(){
-	log("log", "playNext() called!");
+	log("debug", "playNext() called!");
 	if(settings.queue.length > 0){
 		local.transition = 1;
 		client.voiceConnection.playFile(settings.queue[0].url,{},function(){

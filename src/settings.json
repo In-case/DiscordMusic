@@ -5,6 +5,7 @@
     "textDefault": null,
     "commandLiteral": "!",
     "autoplay": 1,
+    "debug": 1,
     "commands": {
         "add": {
             "staff": false,
