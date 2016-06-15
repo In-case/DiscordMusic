@@ -120,32 +120,81 @@ var commands = {
 		this.check = check,
 		this.run = function(message, args){
 			var q = message.content.substring(5);
-			getResult(q, message.author, function(result){
-				if(result == null){
-					message.channel.sendMessage("No results found.");
+			
+			var loc = message.content.indexOf('?v=');
+			
+			if(loc != -1){
+				log("debug", "Direct video linked!");
+				q = message.content.substring(loc+3,loc+14);
+				var params = {
+					part: 'snippet',
+					id: q,
+					auth: secret.key
 				}
-				else{
-					message.channel.sendMessage("Adding " + result.title + " to the queue!");
-					var worked = addVideoToQueue(result,function(worked){
-						if(!worked){
-							message.channel.sendMessage("The link at http://youtu.be/" + result.id + " does not have an audio version. Directly linking another version should work!");
-						}
-						else if(settings.autoplay && client.voiceConnection && local.stopped){
-							message.channel.sendMessage("Beginning playback. Enjoy your music!");
-							client.voiceConnection.setVolume(0.1);
-							setTimeout(function(){
-								playNext();
-							},1000);
-							setTimeout(function(){
-								local.stopped = 0;
-								local.inter = setInterval(interval,5000);
-							},2500);
-							log("debug", "Created interval()");
-						}
-					});
-				}
-				
-			});
+				youtube.videos.list(params, function(err, response){
+					if (err) {
+						console.log('Encountered error:', err);
+					}
+					else if(response.items.length == 0){
+						message.channel.sendMessage("No results found.");
+					}
+					else{
+						var result = {
+							title: response.items[0].snippet.title,
+							user: message.author,
+							id: response.items[0].id
+						};
+						message.channel.sendMessage("Adding " + result.title + " to the queue!");
+						var worked = addVideoToQueue(result,function(worked){
+							if(!worked){
+								message.channel.sendMessage("The link at http://youtu.be/" + result.id + " does not have an audio version. Directly linking another version should work!");
+							}
+							else if(settings.autoplay && client.voiceConnection && local.stopped){
+								message.channel.sendMessage("Beginning playback. Enjoy your music!");
+								client.voiceConnection.setVolume(0.1);
+								setTimeout(function(){
+									playNext();
+								},1000);
+								setTimeout(function(){
+									local.stopped = 0;
+									local.inter = setInterval(interval,5000);
+								},2500);
+								log("debug", "Created interval()");
+							}
+						});
+					}
+				});
+			}
+			else{
+				log("debug", "Search term linked!");
+				getResult(q, message.author, function(result){
+					if(result == null){
+						message.channel.sendMessage("No results found.");
+					}
+					else{
+						message.channel.sendMessage("Adding " + result.title + " to the queue!");
+						var worked = addVideoToQueue(result,function(worked){
+							if(!worked){
+								message.channel.sendMessage("The link at http://youtu.be/" + result.id + " does not have an audio version. Directly linking another version should work!");
+							}
+							else if(settings.autoplay && client.voiceConnection && local.stopped){
+								message.channel.sendMessage("Beginning playback. Enjoy your music!");
+								client.voiceConnection.setVolume(0.1);
+								setTimeout(function(){
+									playNext();
+								},1000);
+								setTimeout(function(){
+									local.stopped = 0;
+									local.inter = setInterval(interval,5000);
+								},2500);
+								log("debug", "Created interval()");
+							}
+						});
+					}
+					
+				});
+			}
+			
 		}
 	},
 	addplaylist: new function (){
