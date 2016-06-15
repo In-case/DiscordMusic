@@ -569,13 +569,18 @@ var commands = {
 				var id = message.author.id;
 					pos = parseInt(args[0])-1;
 				
-				if(isStaff(message) || id == settings.queue[pos].id){
-					var removed = settings.queue.splice(pos,pos+1);
-					message.channel.sendMessage("Removed " + removed[0].title + " from the queue!")
-					save();
+				if(pos >= settings.queue.length){
+					message.channel.sendMessage("This is not a valid position, make sure you typed it correctly!")
 				}
-				else if(!isStaff(message) && id != settings.queue[pos].id){
-					message.channel.sendMessage("You must be staff to remove a song you didn't add!");
+				else{
+					if(isStaff(message) || id == settings.queue[pos].id){
+						var removed = settings.queue.splice(pos,pos+1);
+						message.channel.sendMessage("Removed " + removed[0].title + " from the queue!")
+						save();
+					}
+					else if(!isStaff(message) && id != settings.queue[pos].id){
+						message.channel.sendMessage("You must be staff to remove a song you didn't add!");
+					}
 				}
 			}
 			else{

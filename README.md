@@ -1,4 +1,4 @@
-# Discord Music v0.4.0
+# Discord Music v0.4.1
 A music bot for your server! Written in node.js
 
 Please note this is an early beta, and as such has several (known) bugs.
